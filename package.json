@@ -1,0 +1,13 @@
+{
+  "name": "update-transcribe-vocabulary-kintone",
+  "version": "1.0.0",
+  "description": "update-transcribe-vocabulary-kintone",
+  "main": "index.js",
+  "author": "r3it",
+  "license": "MIT",
+  "dependencies": {
+    "@kintone/rest-api-client": "^1.0.0",
+    "log4js": "^6.1.2"
+  },
+  "private": true
+}

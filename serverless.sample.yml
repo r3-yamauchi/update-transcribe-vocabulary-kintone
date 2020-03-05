@@ -1,0 +1,62 @@
+service: update-transcribe-vocabulary-kintone
+
+custom:
+  defaultProfile: default
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: ${opt:profile, self:custom.defaultProfile}
+
+  environment:
+    LANGUAGE_CODE: ja-JP
+    VOCABULARY_NAME: myvocabulary
+    VOCABULARY_FILE_BUCKET_NAME: my-bucket-name
+    VOCABULARY_FILE_KEY: vocabulary/sales.txt
+    KINTONE_HOSTNAME: demo.cybozu.com
+    KINTONE_APITOKEN: 
+    TARGET_APPID: 1
+    SNS_ERROR_TOPIC_ARN: arn:aws:sns:ap-northeast-1:12345689012:my-topic-name
+    LOG_LEVEL: debug
+
+  stage: prod
+  region: ap-northeast-1
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sns:Publish
+        - s3:GetObject
+        - s3:PutObject
+        - transcribe:GetVocabulary
+        - transcribe:UpdateVocabulary
+      Resource: "*"
+
+# packaging information
+package:
+  exclude:
+    - README.md
+    - spec/**
+    - renovate.json
+    - package.json
+    - package-lock.json
+#  excludeDevDependencies: true
+
+resources:
+  Description: update-transcribe-vocabulary-kintone
+
+functions:
+  do:
+    description: update-transcribe-vocabulary-kintone
+    handler: index.handler
+    memorySize: 768
+    timeout: 30
+    events:
+      - schedule: cron(3/60 13 ? * * *)
+  check:
+    description: check-transcribe-vocabulary
+    handler: index.check_handler
+    memorySize: 128
+    timeout: 30
+    events:
+      - schedule: cron(33/60 13 ? * * *)
